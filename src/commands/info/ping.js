@@ -18,4 +18,4 @@ const commandBase = {
     },
 };
 
-module.exports = commandBase; // Zorg ervoor dat je correct exporteert
+module.exports = commandBase; // Zorg ervoor dat je deze regel hebt
