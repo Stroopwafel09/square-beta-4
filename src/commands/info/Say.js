@@ -33,4 +33,6 @@ exports.commandBase = {
         interaction.reply(text);
     },
 };
-module.exports = say;
+
+// Ensure you export the commandBase
+module.exports = exports.commandBase;
