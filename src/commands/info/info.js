@@ -63,4 +63,6 @@ exports.commandBase = {
         interaction.reply({ embeds: [infoMessage] });
     },
 };
-module.exports = botInfo;
+
+// Make sure to export the commandBase
+module.exports = exports.commandBase;
