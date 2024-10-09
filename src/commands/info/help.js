@@ -14,13 +14,13 @@ exports.commandBase = {
     cooldown: 5000, // 5 seconds cooldown
     ownerOnly: false, // Not restricted to the owner
     async prefixRun(client, message, args) {
-        const commandFolders = fs.readdirSync(path.join(__dirname, '../../Commands'));
+        const commandFolders = fs.readdirSync(path.join(__dirname, '../../commands'));
         const helpMessage = [];
 
         helpMessage.push("**Available Commands:**");
 
         for (const folder of commandFolders) {
-            const commandFiles = fs.readdirSync(path.join(__dirname, '../../Commands', folder))
+            const commandFiles = fs.readdirSync(path.join(__dirname, '../../commands', folder))
                 .filter(file => file.endsWith('.js'));
             
             if (commandFiles.length > 0) {
