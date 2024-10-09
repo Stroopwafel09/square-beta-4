@@ -1,7 +1,6 @@
-// ping.js
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-exports.commandBase = {
+const commandBase = {
     prefixData: {
         name: 'ping',
         aliases: ['pong'],
@@ -19,4 +18,4 @@ exports.commandBase = {
     },
 };
 
-module.exports = exports.commandBase; // Ensure you export correctly
+module.exports = commandBase; // Zorg ervoor dat je correct exporteert
