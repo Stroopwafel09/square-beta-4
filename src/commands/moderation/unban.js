@@ -37,9 +37,12 @@ exports.commandBase = {
         // Attempt to unban the user
         try {
             await guild.members.unban(userId);
-            return await interaction.editReply(`User with ID \`${userId}\` has been successfully unbanned from the server. ✅`);
+            return await interaction.editReply(`✅ User with ID \`${userId}\` has been successfully unbanned from the server.`);
         } catch (error) {
             console.error(error);
+            if (error.code === 50013) {
+                return await interaction.editReply('❌ I cannot unban this user. They might not be banned or I do not have permission to do so.');
+            }
             return await interaction.editReply('❌ An error occurred while trying to unban the user. Please check the user ID and try again.');
         }
     },
