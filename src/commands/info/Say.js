@@ -33,3 +33,4 @@ exports.commandBase = {
         interaction.reply(text);
     },
 };
+module.exports = Say;
