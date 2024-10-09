@@ -22,17 +22,15 @@ exports.commandBase = {
         for (const folder of commandFolders) {
             const commandFiles = fs.readdirSync(path.join(__dirname, '../../commands', folder))
                 .filter(file => file.endsWith('.js'));
-            
+
             if (commandFiles.length > 0) {
                 helpMessage.push(`\n**${folder.charAt(0).toUpperCase() + folder.slice(1)} Commands:**`);
                 for (const file of commandFiles) {
-                    const CommandClass = require(`../../commands/${folder}/${file}`);
-                    // Ensure the CommandClass is valid
-                    if (typeof CommandClass === 'function') {
-                        const commandInstance = new CommandClass(client);
-                        helpMessage.push(`\`${commandInstance.usages.join(", ")}\`: ${commandInstance.description}`);
+                    const command = require(`../../commands/${folder}/${file}`).commandBase;
+                    if (command) {
+                        helpMessage.push(`\`${command.prefixData.name}\`: ${command.slashData.description}`);
                     } else {
-                        console.warn(`Warning: ${file} does not export a constructor.`);
+                        console.warn(`Warning: ${file} does not export a commandBase object.`);
                     }
                 }
             }
@@ -54,16 +52,14 @@ exports.commandBase = {
             if (commandFiles.length > 0) {
                 let commandList = '';
                 for (const file of commandFiles) {
-                    const CommandClass = require(`../../commands/${folder}/${file}`);
-                    // Ensure the CommandClass is valid
-                    if (typeof CommandClass === 'function') {
-                        const commandInstance = new CommandClass(client);
-                        commandList += `\`${commandInstance.usages.join(", ")}\`: ${commandInstance.description}\n`;
+                    const command = require(`../../commands/${folder}/${file}`).commandBase;
+                    if (command) {
+                        commandList += `\`${command.prefixData.name}\`: ${command.slashData.description}\n`;
                     } else {
-                        console.warn(`Warning: ${file} does not export a constructor.`);
+                        console.warn(`Warning: ${file} does not export a commandBase object.`);
                     }
                 }
-                helpEmbed.addFields({ name: folder.charAt(0).toUpperCase() + folder.slice(1) + ' Commands', value: commandList });
+                helpEmbed.addFields({ name: folder.charAt(0).toUpperCase() + folder.slice(1) + ' Commands', value: commandList || 'No commands available', inline: false });
             }
         }
 
