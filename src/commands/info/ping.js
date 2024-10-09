@@ -19,3 +19,4 @@ exports.commandBase = {
 		interaction.reply('Pong 🏓');
 	},
 };
+module.exports = ping;
