@@ -1,4 +1,4 @@
-const { EmbedBuilder, PermissionsBitField } = require('discord.js');
+// ping.js
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 exports.commandBase = {
@@ -9,8 +9,8 @@ exports.commandBase = {
     slashData: new SlashCommandBuilder()
         .setName('ping')
         .setDescription('Pong!'),
-    cooldown: 5000, // 5 seconds cooldown
-    ownerOnly: false, // Not restricted to the owner
+    cooldown: 5000,
+    ownerOnly: false,
     async prefixRun(client, message, args) {
         message.reply('Pong 🏓');
     },
@@ -19,5 +19,4 @@ exports.commandBase = {
     },
 };
 
-// Ensure you export the commandBase correctly
-module.exports = exports.commandBase;
+module.exports = exports.commandBase; // Ensure you export correctly
