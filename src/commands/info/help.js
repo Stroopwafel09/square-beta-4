@@ -26,7 +26,7 @@ exports.commandBase = {
             if (commandFiles.length > 0) {
                 helpMessage.push(`\n**${folder.charAt(0).toUpperCase() + folder.slice(1)} Commands:**`);
                 for (const file of commandFiles) {
-                    const CommandClass = require(`../../Commands/${folder}/${file}`);
+                    const CommandClass = require(`../../commands/${folder}/${file}`);
                     // Ensure the CommandClass is valid
                     if (typeof CommandClass === 'function') {
                         const commandInstance = new CommandClass(client);
@@ -54,7 +54,7 @@ exports.commandBase = {
             if (commandFiles.length > 0) {
                 let commandList = '';
                 for (const file of commandFiles) {
-                    const CommandClass = require(`../../Commands/${folder}/${file}`);
+                    const CommandClass = require(`../../commands/${folder}/${file}`);
                     // Ensure the CommandClass is valid
                     if (typeof CommandClass === 'function') {
                         const commandInstance = new CommandClass(client);
