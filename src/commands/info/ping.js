@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-const commandBase = {
+exports.commandBase = {
     prefixData: {
         name: 'ping',
         aliases: ['pong'],
