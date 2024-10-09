@@ -37,13 +37,13 @@ exports.commandBase = {
         message.reply(finalMessage);
     },
     async slashRun(client, interaction) {
-        const commandFolders = fs.readdirSync(path.join(__dirname, '../../Commands'));
+        const commandFolders = fs.readdirSync(path.join(__dirname, '../../commands'));
         const helpEmbed = new EmbedBuilder()
             .setColor(0x0099FF)
             .setTitle('Available Commands');
 
         for (const folder of commandFolders) {
-            const commandFiles = fs.readdirSync(path.join(__dirname, '../../Commands', folder))
+            const commandFiles = fs.readdirSync(path.join(__dirname, '../../commands', folder))
                 .filter(file => file.endsWith('.js'));
 
             if (commandFiles.length > 0) {
