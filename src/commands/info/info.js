@@ -63,3 +63,4 @@ exports.commandBase = {
         interaction.reply({ embeds: [infoMessage] });
     },
 };
+module.exports = info;
