@@ -42,6 +42,8 @@ exports.commandBase = {
             console.error(error);
             if (error.code === 50013) {
                 return await interaction.editReply('❌ I cannot unban this user. They might not be banned or I do not have permission to do so.');
+            } else if (error.code === 10062) {
+                return; // Interaction was already acknowledged
             }
             return await interaction.editReply('❌ An error occurred while trying to unban the user. Please check the user ID and try again.');
         }
