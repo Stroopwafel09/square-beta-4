@@ -64,5 +64,4 @@ exports.commandBase = {
     },
 };
 
-// Make sure to export the commandBase
-module.exports = exports.commandBase;
+
