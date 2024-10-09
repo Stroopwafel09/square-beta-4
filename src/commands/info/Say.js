@@ -34,5 +34,3 @@ exports.commandBase = {
     },
 };
 
-// Ensure you export the commandBase
-module.exports = exports.commandBase;
