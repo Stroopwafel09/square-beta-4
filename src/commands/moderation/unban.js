@@ -31,13 +31,16 @@ exports.commandBase = {
             return await interaction.reply('❌ You do not have permission to unban members!');
         }
 
+        // Defer the reply to indicate processing
+        await interaction.deferReply();
+
         // Attempt to unban the user
         try {
             await guild.members.unban(userId);
-            return await interaction.reply(`User with ID \`${userId}\` has been successfully unbanned from the server. ✅`);
+            return await interaction.editReply(`User with ID \`${userId}\` has been successfully unbanned from the server. ✅`);
         } catch (error) {
             console.error(error);
-            return await interaction.reply('❌ An error occurred while trying to unban the user. Please check the user ID and try again.');
+            return await interaction.editReply('❌ An error occurred while trying to unban the user. Please check the user ID and try again.');
         }
     },
 };
