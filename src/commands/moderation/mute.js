@@ -41,42 +41,19 @@ exports.commandBase = {
         }
 
         // Check if the member executing the command has permission to mute
-        if (!member.permissions.has("MANAGE_ROLES")) {
+        if (!member.permissions.has("MODERATE_MEMBERS")) {
             return await interaction.reply('❌ You do not have permission to mute members!');
         }
 
-        // Create a mute role if it doesn't exist
-        let muteRole = guild.roles.cache.find(role => role.name === 'Muted');
-        if (!muteRole) {
-            try {
-                muteRole = await guild.roles.create({
-                    name: 'Muted',
-                    permissions: [],
-                });
-
-                // Set the permissions for the role
-                guild.channels.cache.forEach(channel => {
-                    channel.permissionOverwrites.create(muteRole, {
-                        SEND_MESSAGES: false,
-                        SPEAK: false,
-                    });
-                });
-
-            } catch (error) {
-                console.error(error);
-                return await interaction.reply('❌ Failed to create mute role!');
-            }
-        }
-
-        // Add the mute role to the target member
-        await targetMember.roles.add(muteRole);
+        // Apply the timeout
+        const timeoutDuration = duration * 60 * 1000; // Convert to milliseconds
+        await targetMember.timeout(timeoutDuration, 'Muted by command');
 
         await interaction.reply(`${targetMember} has been muted for ${duration} minute(s). ✅`);
 
-        // Set a timeout to remove the mute after the specified duration
+        // Set a timeout to notify when the user is unmuted
         setTimeout(async () => {
-            await targetMember.roles.remove(muteRole);
             await interaction.followUp(`${targetMember} has been unmuted. ⏰`);
-        }, duration * 60 * 1000);
+        }, timeoutDuration);
     },
 };
