@@ -1,6 +1,12 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const fs = require('fs');
-const warnsFile = './warns.json';
+const path = require('path');
+const warnsFile = path.join(__dirname, 'warns.json');
+
+// Ensure warns.json file exists
+if (!fs.existsSync(warnsFile)) {
+    fs.writeFileSync(warnsFile, JSON.stringify({}, null, 2), 'utf8');
+}
 
 exports.commandBase = {
     prefixData: {
@@ -32,25 +38,37 @@ exports.commandBase = {
         const reason = interaction.options.getString('reason');
         const guildId = interaction.guild.id;
 
-        // Load current warnings
-        const warns = JSON.parse(fs.readFileSync(warnsFile, 'utf8'));
+        try {
+            // Load current warnings
+            let warns = {};
+            try {
+                warns = JSON.parse(fs.readFileSync(warnsFile, 'utf8'));
+            } catch (error) {
+                console.error('Error reading warns file:', error);
+                await interaction.reply('There was an error accessing the warning data.');
+                return;
+            }
 
-        // Ensure the guild has an entry
-        if (!warns[guildId]) {
-            warns[guildId] = {};
+            // Ensure the guild has an entry
+            if (!warns[guildId]) {
+                warns[guildId] = {};
+            }
+
+            // Ensure the user has an entry
+            if (!warns[guildId][targetUser.id]) {
+                warns[guildId][targetUser.id] = [];
+            }
+
+            // Add the warning
+            warns[guildId][targetUser.id].push(reason);
+
+            // Save warnings
+            fs.writeFileSync(warnsFile, JSON.stringify(warns, null, 2));
+
+            await interaction.reply(`${targetUser} has been warned for: **${reason}** ✅`);
+        } catch (error) {
+            console.error('Error processing the warn command:', error);
+            await interaction.reply('There was an error processing your request.');
         }
-
-        // Ensure the user has an entry
-        if (!warns[guildId][targetUser.id]) {
-            warns[guildId][targetUser.id] = [];
-        }
-
-        // Add the warning
-        warns[guildId][targetUser.id].push(reason);
-
-        // Save warnings
-        fs.writeFileSync(warnsFile, JSON.stringify(warns, null, 2));
-
-        await interaction.reply(`${targetUser} has been warned for: ${reason} ✅`);
     },
 };
