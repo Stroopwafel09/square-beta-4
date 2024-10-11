@@ -1,3 +1,8 @@
+const { SlashCommandBuilder } = require('@discordjs/builders'); // Import the SlashCommandBuilder
+const { EmbedBuilder } = require('discord.js'); // If you're using embeds
+
+const warnings = new Map(); // Ensure this is defined somewhere in your code
+
 exports.unwarnCommand = {
     prefixData: {
         name: 'unwarn',
@@ -9,6 +14,11 @@ exports.unwarnCommand = {
         .addUserOption(option =>
             option.setName('user')
                 .setDescription('Enter target user.')
+                .setRequired(true)
+        )
+        .addIntegerOption(option =>
+            option.setName('index')
+                .setDescription('Enter the index of the warning to remove.')
                 .setRequired(true)
         )
         .addStringOption(option =>
@@ -25,15 +35,20 @@ exports.unwarnCommand = {
 
     async slashRun(client, interaction) {
         const targetUser = interaction.options.getUser('user');
+        const index = interaction.options.getInteger('index');
         
         if (!warnings.has(targetUser.id) || warnings.get(targetUser.id).length === 0) {
             return await interaction.reply('❌ This user has no warnings to remove!');
         }
 
-        const reason = interaction.options.getString('reason');
         const userWarnings = warnings.get(targetUser.id);
-        userWarnings.pop(); // Remove the last warning
+
+        if (index < 1 || index > userWarnings.length) {
+            return await interaction.reply(`❌ Please provide a valid index (1-${userWarnings.length}).`);
+        }
+
+        const removedWarning = userWarnings.splice(index - 1, 1)[0]; // Remove the specified warning
         
-        return await interaction.reply(`The last warning for ${targetUser} has been removed for: ${reason} ✅`);
+        return await interaction.reply(`The warning "${removedWarning}" for ${targetUser} has been removed for: ${interaction.options.getString('reason')} ✅`);
     },
 };
