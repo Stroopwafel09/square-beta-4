@@ -1,33 +1,21 @@
-const { SlashCommandBuilder } = require('@discordjs/builders'); // Import the SlashCommandBuilder
-const { EmbedBuilder } = require('discord.js'); // If you're using embeds
+const { EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
-const warnings = new Map(); // Ensure this is defined somewhere in your code
-
-exports.unwarnCommand = {
+exports.commandBase = {
     prefixData: {
         name: 'unwarn',
         aliases: [],
     },
     slashData: new SlashCommandBuilder()
         .setName('unwarn')
-        .setDescription('Remove a warning from a member of the guild.')
+        .setDescription('Remove a warning from a member.')
         .addUserOption(option =>
             option.setName('user')
                 .setDescription('Enter target user.')
                 .setRequired(true)
-        )
-        .addIntegerOption(option =>
-            option.setName('index')
-                .setDescription('Enter the index of the warning to remove.')
-                .setRequired(true)
-        )
-        .addStringOption(option =>
-            option.setName('reason')
-                .setDescription('Enter the reason for the unwarn.')
-                .setRequired(true)
         ),
-    cooldown: 5000,
-    ownerOnly: false,
+    cooldown: 5000, // 5 seconds cooldown
+    ownerOnly: false, // Not restricted to the owner
 
     async prefixRun(client, message, args) {
         message.reply('This command is not available in prefix mode.');
@@ -35,20 +23,36 @@ exports.unwarnCommand = {
 
     async slashRun(client, interaction) {
         const targetUser = interaction.options.getUser('user');
-        const index = interaction.options.getInteger('index');
-        
-        if (!warnings.has(targetUser.id) || warnings.get(targetUser.id).length === 0) {
-            return await interaction.reply('❌ This user has no warnings to remove!');
+        const guild = interaction.guild;
+        const member = interaction.member;
+
+        // Fetch the target member from the guild
+        const targetMember = guild.members.cache.get(targetUser.id);
+
+        // Check if the target user is found
+        if (!targetMember) {
+            return await interaction.reply('❌ User not found in this guild!');
         }
 
-        const userWarnings = warnings.get(targetUser.id);
-
-        if (index < 1 || index > userWarnings.length) {
-            return await interaction.reply(`❌ Please provide a valid index (1-${userWarnings.length}).`);
+        // Check if the member executing the command has permission to manage warnings
+        if (!member.permissions.has("MANAGE_ROLES")) {
+            return await interaction.reply('❌ You do not have permission to manage warnings!');
         }
 
-        const removedWarning = userWarnings.splice(index - 1, 1)[0]; // Remove the specified warning
-        
-        return await interaction.reply(`The warning "${removedWarning}" for ${targetUser} has been removed for: ${interaction.options.getString('reason')} ✅`);
+        // Assume you have a method to remove a warning from the user
+        const success = await removeWarningFromUser(targetUser.id); // Implement this function
+
+        if (!success) {
+            return await interaction.reply('❌ Failed to remove the warning. The user might not have any warnings.');
+        }
+
+        return await interaction.reply(`${targetMember} has been successfully unwarned. ✅`);
     },
 };
+
+// Example function to simulate removing a warning (implement your actual logic)
+async function removeWarningFromUser(userId) {
+    // Logic to remove warning from the database or data structure
+    // Return true if successful, false otherwise
+    return true; // Change this as per your implementation
+}
