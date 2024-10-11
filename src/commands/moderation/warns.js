@@ -2,6 +2,11 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const fs = require('fs');
 const warnsFile = './warns.json';
 
+// Ensure warns.json file exists
+if (!fs.existsSync(warnsFile)) {
+    fs.writeFileSync(warnsFile, JSON.stringify({}), 'utf8');
+}
+
 exports.commandBase = {
     prefixData: {
         name: 'showwarns',
@@ -26,15 +31,22 @@ exports.commandBase = {
         const targetUser = interaction.options.getUser('user');
         const guildId = interaction.guild.id;
 
-        // Load current warnings
-        const warns = JSON.parse(fs.readFileSync(warnsFile, 'utf8'));
+        try {
+            // Load current warnings
+            const warns = JSON.parse(fs.readFileSync(warnsFile, 'utf8'));
 
-        // Check if the guild has warnings for the user
-        if (warns[guildId] && warns[guildId][targetUser.id]) {
-            const userWarns = warns[guildId][targetUser.id];
-            await interaction.reply(`${targetUser} has the following warnings:\n- ${userWarns.join('\n- ')}`);
-        } else {
-            await interaction.reply(`${targetUser} has no warnings.`);
+            // Check if the guild has warnings for the user
+            if (warns[guildId] && warns[guildId][targetUser.id]) {
+                const userWarns = warns[guildId][targetUser.id];
+                const warnsList = userWarns.map((warn, index) => `${index + 1}. ${warn}`).join('\n');
+                await interaction.reply(`${targetUser} has the following warnings:\n${warnsList}`);
+            } else {
+                await interaction.reply(`${targetUser} has no warnings.`);
+            }
+        } catch (error) {
+            console.error('Error reading warns file:', error);
+            await interaction.reply('There was an error accessing the warning data.');
         }
     },
 };
+
