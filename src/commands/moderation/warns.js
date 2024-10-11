@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const fs = require('fs');
-const warnsFile = './warns.json';
+const path = require('path');
+const warnsFile = path.join(__dirname, 'warns.json');
 
 // Ensure warns.json file exists
 if (!fs.existsSync(warnsFile)) {
