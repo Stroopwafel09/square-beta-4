@@ -1,24 +1,14 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const fs = require('fs');
-const path = require('path');
-const warnsFile = path.join(__dirname, 'warns.json');
-
-// Ensure warns.json file exists
-if (!fs.existsSync(warnsFile)) {
-    fs.writeFileSync(warnsFile, JSON.stringify({}), 'utf8');
-}
-
-exports.commandBase = {
+exports.warnsCommand = {
     prefixData: {
-        name: 'showwarns',
+        name: 'warns',
         aliases: [],
     },
     slashData: new SlashCommandBuilder()
-        .setName('showwarns')
-        .setDescription('Show the warnings for a user.')
+        .setName('warns')
+        .setDescription('View warnings for a member of the guild.')
         .addUserOption(option =>
             option.setName('user')
-                .setDescription('The user to check warnings for.')
+                .setDescription('Enter target user.')
                 .setRequired(true)
         ),
     cooldown: 5000,
@@ -30,23 +20,19 @@ exports.commandBase = {
 
     async slashRun(client, interaction) {
         const targetUser = interaction.options.getUser('user');
-        const guildId = interaction.guild.id;
-
-        try {
-            // Load current warnings
-            const warns = JSON.parse(fs.readFileSync(warnsFile, 'utf8'));
-
-            // Check if the guild has warnings for the user
-            if (warns[guildId] && warns[guildId][targetUser.id]) {
-                const userWarns = warns[guildId][targetUser.id];
-                const warnsList = userWarns.map((warn, index) => `${index + 1}. ${warn}`).join('\n');
-                await interaction.reply(`${targetUser} has the following warnings:\n${warnsList}`);
-            } else {
-                await interaction.reply(`${targetUser} has no warnings.`);
-            }
-        } catch (error) {
-            console.error('Error reading warns file:', error);
-            await interaction.reply('There was an error accessing the warning data.');
+        
+        if (!warnings.has(targetUser.id) || warnings.get(targetUser.id).length === 0) {
+            return await interaction.reply(`${targetUser} has no warnings.`);
         }
+
+        const userWarnings = warnings.get(targetUser.id);
+        const warningList = userWarnings.map((w, index) => `**${index + 1}:** ${w}`).join('\n');
+
+        const embed = new EmbedBuilder()
+            .setTitle(`${targetUser.username}'s Warnings`)
+            .setDescription(warningList)
+            .setColor('RED');
+
+        return await interaction.reply({ embeds: [embed] });
     },
 };
